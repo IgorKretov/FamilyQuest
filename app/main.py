@@ -76,6 +76,10 @@ if 'current_child' not in st.session_state:
     # Берём первого ребёнка из списка
     if st.session_state.engine.children:
         st.session_state.current_child = list(st.session_state.engine.children.keys())[0]
+
+# Отображение формы добавления ребёнка (если нужно)
+if st.session_state.get('show_add_child', False):
+    render_add_child_form(st.session_state.engine)
         
 # Заголовок
 st.title("🎮 FamilyQuest - Семейные приключения")

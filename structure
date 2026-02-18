@@ -1,0 +1,49 @@
+FamilyQuest/
+├── .streamlit/
+│   └── config.toml              # Настройки темы и сервера
+├── app/
+│   ├── __init__.py
+│   ├── main.py                   # Точка входа
+│   ├── core/                      # Ядро приложения
+│   │   ├── __init__.py
+│   │   ├── game_engine.py         # Основная игровая логика
+│   │   ├── points_system.py       # Система баллов и уровней
+│   │   └── task_generator.py      # Генерация заданий
+│   ├── features/                   # Модули функций
+│   │   ├── __init__.py
+│   │   ├── family_challenge.py     # Семейный челлендж
+│   │   ├── quest_mode.py           # Режим квестов
+│   │   ├── screen_time_wallet.py   # Кошелёк экранного времени
+│   │   └── analytics.py            # Статистика и графики
+│   ├── ui/                          # Компоненты интерфейса
+│   │   ├── __init__.py
+│   │   ├── components.py            # Переиспользуемые UI элементы
+│   │   ├── styles.py                 # CSS стили
+│   │   └── tabs/                     # Вкладки приложения
+│   │       ├── __init__.py
+│   │       ├── daily_tasks.py
+│   │       ├── rewards.py
+│   │       ├── profile.py
+│   │       └── family.py
+│   ├── data/                         # Работа с данными
+│   │   ├── __init__.py
+│   │   ├── database.py                # SQLite подключение
+│   │   ├── models.py                   # Модели данных
+│   │   └── repositories/                # Доступ к данным
+│   │       ├── __init__.py
+│   │       ├── task_repository.py
+│   │       └── user_repository.py
+│   └── utils/                          # Вспомогательные функции
+│       ├── __init__.py
+│       ├── helpers.py
+│       ├── validators.py
+│       └── constants.py
+├── tests/                               # Тесты
+│   ├── __init__.py
+│   ├── test_game_engine.py
+│   └── test_points_system.py
+├── .env                                 # Переменные окружения
+├── .gitignore
+├── requirements.txt                      # Зависимости
+├── Dockerfile                            # Для деплоя
+└── README.md

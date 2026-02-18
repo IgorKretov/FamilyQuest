@@ -13,10 +13,9 @@ def render_sidebar(engine, child_id):
         st.image(f"https://api.dicebear.com/7.x/adventurer/svg?seed={child.name}", width=100)
         st.markdown(f"### {child.name}")
         
-        # Прогресс-бар уровня (БЕЗ ПАРАМЕТРА TEXT)
+        # Прогресс-бар уровня
         points_in_level = child.points % 100
         st.progress(points_in_level / 100)
-        # Текст выводим отдельно
         st.caption(f"Уровень {child.level} • {points_in_level}%")
         
         # Метрики
@@ -26,8 +25,82 @@ def render_sidebar(engine, child_id):
         with col2:
             st.metric("🔥 Дней", child.streak_days)
         
+        # Селектор детей
+        render_child_selector(engine)
+        
         st.markdown("---")
         st.caption(f"🎯 Интересы: {', '.join(child.interests)}")
+
+def render_child_selector(engine):
+    """Компонент для выбора и добавления детей"""
+    st.markdown("### 👥 Дети")
+    
+    # Получаем список всех детей
+    children = list(engine.children.values())
+    
+    if children:
+        # Создаём словарь для выбора
+        child_options = {f"{c.name} ({c.age} лет) ⭐{c.points}": c.id for c in children}
+        
+        # Определяем текущего ребёнка
+        current_child_id = st.session_state.get('current_child')
+        current_name = next((name for name, cid in child_options.items() if cid == current_child_id), list(child_options.keys())[0])
+        
+        # Выбор ребёнка
+        selected = st.selectbox(
+            "Выбери профиль",
+            options=list(child_options.keys()),
+            index=list(child_options.keys()).index(current_name) if current_name in list(child_options.keys()) else 0,
+            key="child_selector"
+        )
+        
+        if selected:
+            st.session_state.current_child = child_options[selected]
+            st.experimental_rerun()
+    
+    # Кнопка добавления нового ребёнка
+    if st.button("➕ Добавить ребёнка", use_container_width=True):
+        st.session_state.show_add_child = True
+
+def render_add_child_form(engine):
+    """Форма добавления нового ребёнка"""
+    with st.form("add_child_form"):
+        st.subheader("👶 Новый герой")
+        
+        name = st.text_input("Имя ребёнка")
+        age = st.number_input("Возраст", min_value=3, max_value=17, value=8)
+        
+        interests = st.multiselect(
+            "Интересы (помогут подбирать задания)",
+            options=["creative", "science", "sport", "art", "music", "nature", "help", "learning"],
+            format_func=lambda x: {
+                "creative": "🎨 Творчество",
+                "science": "🔬 Наука",
+                "sport": "🏃 Спорт",
+                "art": "🖼️ Искусство",
+                "music": "🎵 Музыка",
+                "nature": "🌱 Природа",
+                "help": "🤝 Помощь",
+                "learning": "📚 Учёба"
+            }.get(x, x)
+        )
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.form_submit_button("✅ Добавить"):
+                if name and interests:
+                    child = engine.add_child_to_db(name, age, interests)
+                    st.session_state.current_child = child.id
+                    st.session_state.show_add_child = False
+                    st.success(f"🎉 Добро пожаловать, {name}!")
+                    st.experimental_rerun()
+                else:
+                    st.error("Заполни имя и выбери интересы!")
+        
+        with col2:
+            if st.form_submit_button("❌ Отмена"):
+                st.session_state.show_add_child = False
+                st.experimental_rerun()
 
 def load_css():
     """Загрузка кастомных CSS стилей"""

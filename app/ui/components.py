@@ -31,6 +31,24 @@ def render_sidebar(engine, child_id):
         st.markdown("---")
         st.caption(f"🎯 Интересы: {', '.join(child.interests)}")
 
+    with st.sidebar:
+        # ... существующие элементы ...
+        
+        st.markdown("---")
+        
+        # Кнопка родительского режима
+        if not st.session_state.get('parent_authenticated', False):
+            if st.button("👨‍👩‍👧 Родителям", use_container_width=True):
+                st.session_state.show_parent_login = True
+        else:
+            # Показываем, что родительский режим активен
+            st.success("👑 Режим родителя")
+            if st.button("🚪 Выйти", use_container_width=True):
+                st.session_state.parent_authenticated = False
+                st.session_state.show_parent_login = False
+                st.experimental_rerun()
+
+
 def render_child_selector(engine):
     """Компонент для выбора и добавления детей"""
     st.markdown("### 👥 Дети")

@@ -13,6 +13,8 @@ from ui.components import render_sidebar, load_css
 from ui.tabs.create_task import render_create_task, render_task_library
 from ui.tabs.achievements import render_achievements
 from ui.effects import add_custom_css, play_success_effect, play_achievement_effect
+from core.parent_mode import ParentMode, render_parent_login, render_parent_panel
+from datetime import datetime, timedelta
 
 # Инициализация базы данных при первом запуске
 from data.database import init_database, ChildRepository, TaskRepository

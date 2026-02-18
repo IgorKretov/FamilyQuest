@@ -13,9 +13,11 @@ def render_sidebar(engine, child_id):
         st.image(f"https://api.dicebear.com/7.x/adventurer/svg?seed={child.name}", width=100)
         st.markdown(f"### {child.name}")
         
-        # Прогресс-бар уровня
+        # Прогресс-бар уровня (БЕЗ ПАРАМЕТРА TEXT)
         points_in_level = child.points % 100
-        st.progress(points_in_level / 100, text=f"Уровень {child.level}")
+        st.progress(points_in_level / 100)
+        # Текст выводим отдельно
+        st.caption(f"Уровень {child.level} • {points_in_level}%")
         
         # Метрики
         col1, col2 = st.columns(2)

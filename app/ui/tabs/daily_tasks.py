@@ -4,6 +4,7 @@
 import streamlit as st
 from datetime import datetime
 from core.game_engine import GameEngine
+from ui.effects import play_success_effect
 
 def render_daily_tasks(engine: GameEngine, child_id: int):
     st.subheader("📋 Задания на сегодня")
@@ -57,9 +58,19 @@ def render_daily_tasks(engine: GameEngine, child_id: int):
                     st.session_state.show_completion = False
                     st.experimental_rerun()
             else:
+                # Блок подтверждения:
                 if st.button("Да, я выполнил задание"):
-                    points = engine.complete_task(task.id, child_id)
+                    result = engine.complete_task(task.id, child_id)
+                    points = result['points']
+                    
+                    play_success_effect()
                     st.success(f"✅ Отлично! +{points} баллов!")
-                    st.balloons()
+                    
+                    # Проверяем новые достижения
+                    if result.get('new_achievements'):
+                        for ach in result['new_achievements']:
+                            play_achievement_effect(ach['name'])
+                            st.info(f"🏆 Новое достижение: {ach['name']}! +{ach.get('reward_points', 0)} баллов")
+                    
                     st.session_state.show_completion = False
                     st.experimental_rerun()

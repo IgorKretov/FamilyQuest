@@ -68,6 +68,29 @@ def init_database():
             FOREIGN KEY (child_id) REFERENCES children (id)
         )
     ''')
+
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS achievements (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            child_id INTEGER,
+            achievement_id TEXT,
+            unlocked_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (child_id) REFERENCES children (id)
+        )
+    ''')
+    
+    #таблица с описанием достижений
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS achievements_def (
+            id TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            description TEXT,
+            emoji TEXT,
+            condition_type TEXT,  -- tasks_completed, streak_days, points_total
+            condition_value INTEGER,
+            reward_points INTEGER
+        )
+    ''')
     
     conn.commit()
     conn.close()

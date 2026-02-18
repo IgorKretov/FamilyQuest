@@ -3,7 +3,7 @@
 """
 import streamlit as st
 from datetime import datetime
-from app.core.game_engine import GameEngine
+from core.game_engine import GameEngine
 
 def render_daily_tasks(engine: GameEngine, child_id: int):
     st.subheader("📋 Задания на сегодня")

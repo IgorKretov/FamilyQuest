@@ -77,6 +77,18 @@ if 'engine' not in st.session_state:
             "child_id": child.id
         })
 
+if 'parent_mode' not in st.session_state:
+    from app.data.database import get_connection
+    st.session_state.parent_mode = ParentMode(get_connection())
+    st.session_state.parent_authenticated = False
+    st.session_state.show_parent_login = False
+
+if st.session_state.get('show_parent_login', False) and not st.session_state.get('parent_authenticated', False):
+    render_parent_login()
+elif st.session_state.get('parent_authenticated', False):
+    render_parent_panel(st.session_state.engine, st.session_state.parent_mode)
+    st.markdown("---")
+    
 if 'current_child' not in st.session_state:
     # Берём первого ребёнка из списка
     if st.session_state.engine.children:
@@ -85,6 +97,13 @@ if 'current_child' not in st.session_state:
 # Отображение формы добавления ребёнка (если нужно)
 if st.session_state.get('show_add_child', False):
     render_add_child_form(st.session_state.engine)
+
+# Проверка, не истекла ли родительская сессия (через 5 минут)
+if st.session_state.get('parent_authenticated', False):
+    auth_time = st.session_state.get('parent_auth_time', datetime.now() - timedelta(minutes=10))
+    if datetime.now() - auth_time > timedelta(minutes=5):
+        st.session_state.parent_authenticated = False
+        st.warning("⏰ Сессия родителя истекла. Войдите снова.")
         
 # Заголовок
 st.title("🎮 FamilyQuest - Семейные приключения")

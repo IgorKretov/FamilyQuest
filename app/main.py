@@ -3,13 +3,19 @@ FamilyQuest - Главный файл приложения
 """
 import streamlit as st
 from datetime import datetime
-from app.core.game_engine import GameEngine
-from app.core.points_system import PointsCalculator
-from app.ui.tabs.daily_tasks import render_daily_tasks
-from app.ui.tabs.rewards import render_rewards
-from app.ui.tabs.profile import render_profile
-from app.ui.tabs.family import render_family
-from app.ui.components import render_sidebar, load_css
+from core.game_engine import GameEngine
+from core.points_system import PointsCalculator
+from ui.tabs.daily_tasks import render_daily_tasks
+from ui.tabs.rewards import render_rewards
+from ui.tabs.profile import render_profile
+from ui.tabs.family import render_family
+from ui.components import render_sidebar, load_css
+
+# Инициализация базы данных при первом запуске
+from data.database import init_database, ChildRepository, TaskRepository
+
+# Создаём таблицы, если их нет
+init_database()
 
 # Настройка страницы
 st.set_page_config(

@@ -11,6 +11,8 @@ from ui.tabs.profile import render_profile
 from ui.tabs.family import render_family
 from ui.components import render_sidebar, load_css
 from ui.tabs.create_task import render_create_task, render_task_library
+from ui.tabs.achievements import render_achievements
+from ui.effects import add_custom_css, play_success_effect, play_achievement_effect
 
 # Инициализация базы данных при первом запуске
 from data.database import init_database, ChildRepository, TaskRepository
@@ -28,7 +30,7 @@ st.set_page_config(
 
 # Загрузка стилей
 load_css()
-
+add_custom_css()
 # Инициализация сессии
 # Инициализация сессии
 if 'engine' not in st.session_state:
@@ -88,9 +90,10 @@ st.title("🎮 FamilyQuest - Семейные приключения")
 # Боковая панель с информацией о ребёнке
 render_sidebar(st.session_state.engine, st.session_state.current_child)
 
-tab1, tab2, tab3, tab4, tab5 = st.tabs([
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     "📋 Задания",
-    "✨ Создать",  # Новая вкладка
+    "✨ Создать",
+    "🏆 Достижения",  # Новая вкладка
     "🎁 Награды",
     "👤 Профиль",
     "👨‍👩‍👧 Семья"
@@ -108,7 +111,7 @@ with tab2:
         render_task_library(st.session_state.engine, st.session_state.current_child)
 
 with tab3:
-    render_rewards(st.session_state.engine, st.session_state.current_child)
+    render_achievements(st.session_state.engine, st.session_state.current_child)
 
 with tab4:
     render_profile(st.session_state.engine, st.session_state.current_child)

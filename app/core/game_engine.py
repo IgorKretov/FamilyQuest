@@ -4,6 +4,7 @@
 from dataclasses import dataclass
 from datetime import datetime, date
 from typing import List, Dict, Optional
+from app.core.achievements import AchievementSystem
 import random
 
 @dataclass
@@ -46,6 +47,7 @@ class GameEngine:
             "learning": {"name": "Учёба", "emoji": "📚"},
             "nature": {"name": "Природа", "emoji": "🌱"},
         }
+        self.achievement_system = None
         
     def add_child(self, name: str, age: int, interests: List[str]) -> Child:
         child_id = len(self.children) + 1
@@ -202,3 +204,74 @@ def load_tasks_from_db(self, child_id: int) -> List[Task]:
         tasks.append(task)
     
     return tasks
+
+def init_achievements(self, db_conn):
+        """Инициализация системы достижений"""
+        from app.data.database import get_connection
+        self.achievement_system = AchievementSystem(get_connection())
+    
+def complete_task(self, task_id: int, child_id: int, photo_url: str = None) -> Dict:
+    """Расширенная версия с проверкой достижений"""
+    from app.data.database import TaskRepository, ChildRepository
+    
+    # Получаем баллы за задание
+    points = TaskRepository.complete_task(task_id, photo_url)
+    
+    if points > 0:
+        # Собираем статистику для проверки достижений
+        stats = self._collect_stats(child_id)
+        
+        # Проверяем новые достижения
+        if self.achievement_system:
+            new_achievements = self.achievement_system.check_and_unlock(child_id, stats)
+            
+            # Добавляем бонусные баллы за достижения
+            total_reward = points
+            for ach in new_achievements:
+                total_reward += ach.get('reward_points', 0)
+            
+            return {
+                'points': total_reward,
+                'new_achievements': new_achievements
+            }
+    
+    return {'points': points, 'new_achievements': []}
+
+def _collect_stats(self, child_id: int) -> Dict:
+    """Собрать статистику ребёнка для проверки достижений"""
+    from app.data.database import get_connection
+    
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    # Общее количество выполненных заданий
+    cursor.execute('''
+        SELECT COUNT(*) FROM tasks 
+        WHERE child_id = ? AND completed = 1
+    ''', (child_id,))
+    total_tasks = cursor.fetchone()[0]
+    
+    # Задания по категориям
+    cursor.execute('''
+        SELECT category, COUNT(*) FROM tasks 
+        WHERE child_id = ? AND completed = 1
+        GROUP BY category
+    ''', (child_id,))
+    category_stats = {row[0]: row[1] for row in cursor.fetchall()}
+    
+    # Текущие баллы и streak
+    cursor.execute('''
+        SELECT points, streak_days FROM children WHERE id = ?
+    ''', (child_id,))
+    child_data = cursor.fetchone()
+    
+    conn.close()
+    
+    stats = {
+        'total_tasks': total_tasks,
+        'total_points': child_data[0] if child_data else 0,
+        'streak_days': child_data[1] if child_data else 0,
+        **{f'category_{k}': v for k, v in category_stats.items()}
+    }
+    
+    return stats

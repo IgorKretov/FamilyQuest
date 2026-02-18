@@ -91,6 +91,20 @@ def init_database():
             reward_points INTEGER
         )
     ''')
+
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS app_settings (
+            key TEXT PRIMARY KEY,
+            value TEXT,
+            updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+
+# Добавляем PIN-код по умолчанию (если нет)
+cursor.execute('''
+    INSERT OR IGNORE INTO app_settings (key, value)
+    VALUES ('parent_pin', '1234')
+''')
     
     conn.commit()
     conn.close()

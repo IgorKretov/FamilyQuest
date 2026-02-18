@@ -10,6 +10,7 @@ from ui.tabs.rewards import render_rewards
 from ui.tabs.profile import render_profile
 from ui.tabs.family import render_family
 from ui.components import render_sidebar, load_css
+from ui.tabs.create_task import render_create_task, render_task_library
 
 # Инициализация базы данных при первом запуске
 from data.database import init_database, ChildRepository, TaskRepository
@@ -87,9 +88,9 @@ st.title("🎮 FamilyQuest - Семейные приключения")
 # Боковая панель с информацией о ребёнке
 render_sidebar(st.session_state.engine, st.session_state.current_child)
 
-# Основные вкладки
-tab1, tab2, tab3, tab4 = st.tabs([
+tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "📋 Задания",
+    "✨ Создать",  # Новая вкладка
     "🎁 Награды",
     "👤 Профиль",
     "👨‍👩‍👧 Семья"
@@ -99,12 +100,20 @@ with tab1:
     render_daily_tasks(st.session_state.engine, st.session_state.current_child)
 
 with tab2:
-    render_rewards(st.session_state.engine, st.session_state.current_child)
+    # Две подвкладки: создание и библиотека
+    subtab1, subtab2 = st.tabs(["✏️ Своё задание", "📚 Готовые шаблоны"])
+    with subtab1:
+        render_create_task(st.session_state.engine, st.session_state.current_child)
+    with subtab2:
+        render_task_library(st.session_state.engine, st.session_state.current_child)
 
 with tab3:
-    render_profile(st.session_state.engine, st.session_state.current_child)
+    render_rewards(st.session_state.engine, st.session_state.current_child)
 
 with tab4:
+    render_profile(st.session_state.engine, st.session_state.current_child)
+
+with tab5:
     render_family(st.session_state.engine, st.session_state.current_child)
 
 # Footer

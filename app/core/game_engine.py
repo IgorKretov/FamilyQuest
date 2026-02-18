@@ -106,3 +106,104 @@ class GameEngine:
         # Перемешиваем и берём нужное количество
         random.shuffle(suitable_tasks)
         return suitable_tasks[:count]
+
+    def load_children_from_db(self):
+    """Загрузить всех детей из БД"""
+    from app.data.database import ChildRepository
+    
+    children_data = ChildRepository.get_all()
+    self.children = {}
+    for child_data in children_data:
+        # Преобразуем interests из JSON обратно в список
+        if child_data['interests']:
+            child_data['interests'] = json.loads(child_data['interests'])
+        else:
+            child_data['interests'] = []
+        
+        # Создаём объект Child
+        child = Child(
+            id=child_data['id'],
+            name=child_data['name'],
+            age=child_data['age'],
+            avatar=child_data['avatar'],
+            interests=child_data['interests'],
+            points=child_data['points'],
+            level=child_data['level'],
+            streak_days=child_data['streak_days'],
+            last_active=datetime.fromisoformat(child_data['last_active']).date()
+        )
+        self.children[child.id] = child
+
+def add_child_to_db(self, name: str, age: int, interests: List[str]) -> Child:
+    """Добавить ребёнка в БД и в память"""
+    from app.data.database import ChildRepository
+    
+    child_id = ChildRepository.create(name, age, interests)
+    
+    child = Child(
+        id=child_id,
+        name=name,
+        age=age,
+        avatar=f"https://api.dicebear.com/7.x/adventurer/svg?seed={name}",
+        interests=interests,
+        points=0,
+        level=1,
+        streak_days=0,
+        last_active=date.today()
+    )
+    
+    self.children[child_id] = child
+    return child
+
+def save_task_to_db(self, task_data: Dict) -> Task:
+    """Сохранить задание в БД"""
+    from app.data.database import TaskRepository
+    
+    task_id = TaskRepository.create(task_data)
+    
+    task = Task(
+        id=task_id,
+        title=task_data['title'],
+        description=task_data['description'],
+        category=task_data['category'],
+        points=task_data['points'],
+        difficulty=task_data['difficulty'],
+        emoji=task_data['emoji'],
+        photo_required=task_data.get('photo_required', False),
+        child_id=task_data['child_id'],
+        due_date=task_data.get('due_date'),
+        completed=False,
+        completed_at=None,
+        photo_url=None,
+        created_at=datetime.now()
+    )
+    
+    return task
+
+def load_tasks_from_db(self, child_id: int) -> List[Task]:
+    """Загрузить задания ребёнка из БД"""
+    from app.data.database import TaskRepository
+    
+    tasks_data = TaskRepository.get_daily_tasks(child_id)
+    tasks = []
+    
+    for task_data in tasks_data:
+        task = Task(
+            id=task_data['id'],
+            title=task_data['title'],
+            description=task_data['description'],
+            category=task_data['category'],
+            points=task_data['points'],
+            difficulty=task_data['difficulty'],
+            emoji=task_data['emoji'],
+            photo_required=bool(task_data['photo_required']),
+            child_id=task_data['child_id'],
+            due_date=task_data.get('due_date'),
+            completed=bool(task_data['completed']),
+            completed_at=task_data.get('completed_at'),
+            photo_url=task_data.get('photo_url'),
+            created_at=datetime.fromisoformat(task_data['created_at']) if task_data['created_at'] else datetime.now()
+        )
+        tasks.append(task)
+    
+    return tasks

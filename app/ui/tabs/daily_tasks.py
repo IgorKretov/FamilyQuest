@@ -62,4 +62,4 @@ def render_daily_tasks(engine: GameEngine, child_id: int):
                     st.success(f"✅ Отлично! +{points} баллов!")
                     st.balloons()
                     st.session_state.show_completion = False
-                    st.rerun()
+                    st.experimental_rerun()

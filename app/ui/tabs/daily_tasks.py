@@ -55,7 +55,7 @@ def render_daily_tasks(engine: GameEngine, child_id: int):
                     st.success(f"✅ Молодец! +{points} баллов!")
                     st.balloons()
                     st.session_state.show_completion = False
-                    st.rerun()
+                    st.experimental_rerun()
             else:
                 if st.button("Да, я выполнил задание"):
                     points = engine.complete_task(task.id, child_id)

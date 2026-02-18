@@ -92,20 +92,15 @@ class GameEngine:
     
     def get_daily_tasks(self, child_id: int, count: int = 3) -> List[Task]:
         """Получить персонализированные задания на день"""
-        child = self.children.get(child_id)
-        if not child:
-            return []
+        # Загружаем из БД
+        tasks = self.load_tasks_from_db(child_id)
         
-        # Фильтруем по интересам и возрасту
-        suitable_tasks = []
-        for task in self.tasks:
-            if not task.completed:
-                # Здесь можно добавить сложную логику подбора
-                suitable_tasks.append(task)
+        # Если заданий мало, создаём несколько стандартных
+        if len(tasks) < count:
+            # Здесь можно добавить логику генерации
+            pass
         
-        # Перемешиваем и берём нужное количество
-        random.shuffle(suitable_tasks)
-        return suitable_tasks[:count]
+        return tasks[:count]
 
     def load_children_from_db(self):
     """Загрузить всех детей из БД"""

@@ -113,8 +113,7 @@ def render_parent_panel(engine, parent_mode):
         <h2>⚙️ Панель управления</h2>
     </div>
     """, unsafe_allow_html=True)
-    
-    tab1, tab2, tab3 = st.tabs(["👥 Дети", "🔐 Настройки", "📊 Статистика"])
+    tab1, tab2, tab3, tab4 = st.tabs(["👥 Дети", "🔐 Настройки", "📊 Статистика", "📤 Экспорт"])
     
     with tab1:
         st.subheader("Управление детьми")
@@ -202,3 +201,10 @@ def render_parent_panel(engine, parent_mode):
         if st.button("📥 Экспортировать статистику (CSV)"):
             # Здесь будет экспорт
             st.success("Функция экспорта будет добавлена")
+
+    with tab4:
+        from utils.export import DataExporter, render_export_section
+        from data.database import get_connection
+        
+        exporter = DataExporter(st.session_state.engine, get_connection())
+        render_export_section(exporter)

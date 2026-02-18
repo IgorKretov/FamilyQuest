@@ -29,41 +29,54 @@ st.set_page_config(
 load_css()
 
 # Инициализация сессии
+# Инициализация сессии
 if 'engine' not in st.session_state:
     st.session_state.engine = GameEngine()
-    # Создаём тестового ребёнка
-    st.session_state.engine.add_child("Саша", 8, ["creative", "science"])
-    st.session_state.engine.create_task(
-        title="Космический корабль",
-        description="Построй корабль из картонной коробки",
-        category="creative",
-        points=50,
-        difficulty="medium",
-        emoji="🚀",
-        photo_required=True
-    )
-    st.session_state.engine.create_task(
-        title="Невидимое письмо",
-        description="Напиши письмо лимонным соком",
-        category="science",
-        points=30,
-        difficulty="easy",
-        emoji="📝",
-        photo_required=True
-    )
-    st.session_state.engine.create_task(
-        title="Помощь на кухне",
-        description="Приготовь бутерброды для семьи",
-        category="help",
-        points=40,
-        difficulty="easy",
-        emoji="🍳",
-        photo_required=False
-    )
+    
+    # Загружаем существующих детей из БД
+    st.session_state.engine.load_children_from_db()
+    
+    # Если детей нет, создаём тестового
+    if not st.session_state.engine.children:
+        child = st.session_state.engine.add_child_to_db("Саша", 8, ["creative", "science"])
+        
+        # Создаём тестовые задания
+        st.session_state.engine.save_task_to_db({
+            "title": "Космический корабль",
+            "description": "Построй корабль из картонной коробки",
+            "category": "creative",
+            "points": 50,
+            "difficulty": "medium",
+            "emoji": "🚀",
+            "photo_required": True,
+            "child_id": child.id
+        })
+        st.session_state.engine.save_task_to_db({
+            "title": "Невидимое письмо",
+            "description": "Напиши письмо лимонным соком",
+            "category": "science",
+            "points": 30,
+            "difficulty": "easy",
+            "emoji": "📝",
+            "photo_required": True,
+            "child_id": child.id
+        })
+        st.session_state.engine.save_task_to_db({
+            "title": "Помощь на кухне",
+            "description": "Приготовь бутерброды для семьи",
+            "category": "help",
+            "points": 40,
+            "difficulty": "easy",
+            "emoji": "🍳",
+            "photo_required": False,
+            "child_id": child.id
+        })
 
 if 'current_child' not in st.session_state:
-    st.session_state.current_child = 1  # ID первого ребёнка
-
+    # Берём первого ребёнка из списка
+    if st.session_state.engine.children:
+        st.session_state.current_child = list(st.session_state.engine.children.keys())[0]
+        
 # Заголовок
 st.title("🎮 FamilyQuest - Семейные приключения")
 

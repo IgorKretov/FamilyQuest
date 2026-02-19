@@ -207,9 +207,9 @@ def load_tasks_from_db(self, child_id: int) -> List[Task]:
     return tasks
 
 def init_achievements(self, db_conn):
-        """Инициализация системы достижений"""
-        from data.database import get_connection
-        self.achievement_system = AchievementSystem(get_connection())
+    """Инициализация системы достижений"""
+    from data.database import get_connection
+    self.achievement_system = AchievementSystem(get_connection())
     
 def complete_task(self, task_id: int, child_id: int, photo_url: str = None) -> Dict:
     """Расширенная версия с проверкой достижений"""

@@ -4,7 +4,7 @@
 from dataclasses import dataclass
 from datetime import datetime, date
 from typing import List, Dict, Optional
-from app.core.achievements import AchievementSystem
+from core.achievements import AchievementSystem
 import random
 import json
 

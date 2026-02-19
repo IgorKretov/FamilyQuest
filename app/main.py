@@ -18,6 +18,17 @@ from datetime import datetime, timedelta
 
 # Инициализация базы данных при первом запуске
 from data.database import init_database, ChildRepository, TaskRepository, get_connection
+import traceback
+
+# Отладка: считаем количество rerun
+if 'rerun_count' not in st.session_state:
+    st.session_state.rerun_count = 0
+else:
+    st.session_state.rerun_count += 1
+    
+if st.session_state.rerun_count > 10:
+    st.error(f"⚠️ Обнаружена рекурсия! ({st.session_state.rerun_count} rerun)")
+    st.stop()  # Останавливаем выполнение
 
 # Инициализация БД (только один раз)
 if 'db_initialized' not in st.session_state:

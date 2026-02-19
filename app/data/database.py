@@ -100,12 +100,12 @@ def init_database():
         )
     ''')
 
-# Добавляем PIN-код по умолчанию (если нет)
-cursor.execute('''
-    INSERT OR IGNORE INTO app_settings (key, value)
-    VALUES ('parent_pin', '1234')
-''')
-    
+    # Добавляем PIN-код по умолчанию (если нет)
+    cursor.execute('''
+        INSERT OR IGNORE INTO app_settings (key, value)
+        VALUES ('parent_pin', '1234')
+    ''')
+        
     conn.commit()
     conn.close()
     

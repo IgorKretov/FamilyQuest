@@ -57,7 +57,7 @@ def render_create_task(engine, child_id):
         
         col1, col2, col3 = st.columns(3)
         with col2:
-            submitted = st.form_submit_button("✅ Создать задание", use_container_width=True)
+            submitted = st.form_submit_button("✅ Создать задание")
         
         if submitted:
             if title and description:

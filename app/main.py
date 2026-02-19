@@ -51,6 +51,7 @@ load_css()
 add_custom_css()
 # Инициализация сессии
 # Инициализация сессии
+# Инициализация сессии
 if 'engine' not in st.session_state:
     st.session_state.engine = GameEngine()
     
@@ -72,6 +73,7 @@ if 'engine' not in st.session_state:
             "photo_required": True,
             "child_id": child.id
         })
+        # ... остальные задания
         st.session_state.engine.save_task_to_db({
             "title": "Невидимое письмо",
             "description": "Напиши письмо лимонным соком",

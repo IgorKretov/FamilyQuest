@@ -38,12 +38,12 @@ def render_sidebar(engine, child_id):
         
         # Кнопка родительского режима
         if not st.session_state.get('parent_authenticated', False):
-            if st.button("👨‍👩‍👧 Родителям", use_container_width=True):
+            if st.button("👨‍👩‍👧 Родителям"):
                 st.session_state.show_parent_login = True
         else:
             # Показываем, что родительский режим активен
             st.success("👑 Режим родителя")
-            if st.button("🚪 Выйти", use_container_width=True):
+            if st.button("🚪 Выйти"):
                 st.session_state.parent_authenticated = False
                 st.session_state.show_parent_login = False
                 st.experimental_rerun()
@@ -88,7 +88,7 @@ def render_child_selector(engine):
             st.experimental_rerun()
     
     # Кнопка добавления нового ребёнка
-    if st.button("➕ Добавить ребёнка", use_container_width=True, key="add_child_btn"):
+    if st.button("➕ Добавить ребёнка", key="add_child_btn"):
         st.session_state.show_add_child = True
         st.experimental_rerun()
 

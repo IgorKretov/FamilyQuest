@@ -131,7 +131,30 @@ class GameEngine:
                 last_active=datetime.fromisoformat(child_data['last_active']).date()
             )
             self.children[child.id] = child
-
+    def add_child_to_db(self, name: str, age: int, interests: List[str]) -> Child:
+        """Добавить ребёнка в БД и в память"""
+        from data.database import ChildRepository
+        
+        # Сохраняем в БД
+        child_id = ChildRepository.create(name, age, interests)
+        
+        # Создаём объект Child
+        child = Child(
+            id=child_id,
+            name=name,
+            age=age,
+            avatar=f"https://api.dicebear.com/7.x/adventurer/svg?seed={name}",
+            interests=interests,
+            points=0,
+            level=1,
+            streak_days=0,
+            last_active=date.today()
+        )
+        
+        # Добавляем в память
+        self.children[child_id] = child
+        return child
+    
 def add_child_to_db(self, name: str, age: int, interests: List[str]) -> Child:
     """Добавить ребёнка в БД и в память"""
     from data.database import ChildRepository

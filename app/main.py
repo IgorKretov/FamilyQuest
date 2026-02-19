@@ -9,7 +9,7 @@ from ui.tabs.daily_tasks import render_daily_tasks
 from ui.tabs.rewards import render_rewards
 from ui.tabs.profile import render_profile
 from ui.tabs.family import render_family
-from ui.components import render_sidebar, load_css
+from ui.components import render_sidebar, load_css, render_add_child_form
 from ui.tabs.create_task import render_create_task, render_task_library
 from ui.tabs.achievements import render_achievements
 from ui.effects import add_custom_css, play_success_effect, play_achievement_effect

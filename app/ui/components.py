@@ -62,23 +62,36 @@ def render_child_selector(engine):
         
         # Определяем текущего ребёнка
         current_child_id = st.session_state.get('current_child')
-        current_name = next((name for name, cid in child_options.items() if cid == current_child_id), list(child_options.keys())[0])
+        
+        # Находим текущее значение в списке
+        current_display = None
+        for name, cid in child_options.items():
+            if cid == current_child_id:
+                current_display = name
+                break
+        
+        if not current_display and child_options:
+            current_display = list(child_options.keys())[0]
         
         # Выбор ребёнка
         selected = st.selectbox(
             "Выбери профиль",
             options=list(child_options.keys()),
-            index=list(child_options.keys()).index(current_name) if current_name in list(child_options.keys()) else 0,
-            key="child_selector"
+            index=list(child_options.keys()).index(current_display) if current_display in list(child_options.keys()) else 0,
+            key="child_selector_main"
         )
         
-        if selected:
+        # Обновляем только если изменилось
+        if selected and child_options[selected] != current_child_id:
             st.session_state.current_child = child_options[selected]
+            # Используем экспериментальный rerun только при реальном изменении
             st.experimental_rerun()
     
     # Кнопка добавления нового ребёнка
-    if st.button("➕ Добавить ребёнка", use_container_width=True):
+    if st.button("➕ Добавить ребёнка", use_container_width=True, key="add_child_btn"):
         st.session_state.show_add_child = True
+        st.experimental_rerun()
+
 
 def render_add_child_form(engine):
     """Форма добавления нового ребёнка"""

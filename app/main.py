@@ -104,11 +104,14 @@ if st.session_state.get('show_add_child', False):
     render_add_child_form(st.session_state.engine)
 
 # Проверка, не истекла ли родительская сессия (через 5 минут)
+# Проверка родительской сессии (без rerun)
 if st.session_state.get('parent_authenticated', False):
-    auth_time = st.session_state.get('parent_auth_time', datetime.now() - timedelta(minutes=10))
-    if datetime.now() - auth_time > timedelta(minutes=5):
-        st.session_state.parent_authenticated = False
-        st.warning("⏰ Сессия родителя истекла. Войдите снова.")
+    auth_time = st.session_state.get('parent_auth_time')
+    if auth_time:
+        # Просто обновляем статус, без rerun
+        if datetime.now() - auth_time > timedelta(minutes=5):
+            st.session_state.parent_authenticated = False
+            # НЕ вызываем rerun здесь!
         
 # Заголовок
 st.title("🎮 FamilyQuest - Семейные приключения")

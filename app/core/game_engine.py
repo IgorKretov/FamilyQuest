@@ -15,8 +15,9 @@ class Task:
     description: str
     category: str
     points: int
-    difficulty: str  # easy, medium, hard
+    difficulty: str
     emoji: str
+    child_id: int
     created_at: datetime
     due_date: Optional[date] = None
     completed: bool = False

@@ -78,7 +78,7 @@ if 'engine' not in st.session_state:
         })
 
 if 'parent_mode' not in st.session_state:
-    from app.data.database import get_connection
+    from data.database import get_connection
     st.session_state.parent_mode = ParentMode(get_connection())
     st.session_state.parent_authenticated = False
     st.session_state.show_parent_login = False

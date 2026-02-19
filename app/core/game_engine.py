@@ -107,7 +107,7 @@ class GameEngine:
 
     def load_children_from_db(self):
         """Загрузить всех детей из БД"""
-        from app.data.database import ChildRepository
+        from data.database import ChildRepository
         
         children_data = ChildRepository.get_all()
         self.children = {}
@@ -134,7 +134,7 @@ class GameEngine:
 
 def add_child_to_db(self, name: str, age: int, interests: List[str]) -> Child:
     """Добавить ребёнка в БД и в память"""
-    from app.data.database import ChildRepository
+    from data.database import ChildRepository
     
     child_id = ChildRepository.create(name, age, interests)
     
@@ -155,7 +155,7 @@ def add_child_to_db(self, name: str, age: int, interests: List[str]) -> Child:
 
 def save_task_to_db(self, task_data: Dict) -> Task:
     """Сохранить задание в БД"""
-    from app.data.database import TaskRepository
+    from data.database import TaskRepository
     
     task_id = TaskRepository.create(task_data)
     
@@ -180,7 +180,7 @@ def save_task_to_db(self, task_data: Dict) -> Task:
 
 def load_tasks_from_db(self, child_id: int) -> List[Task]:
     """Загрузить задания ребёнка из БД"""
-    from app.data.database import TaskRepository
+    from data.database import TaskRepository
     
     tasks_data = TaskRepository.get_daily_tasks(child_id)
     tasks = []
@@ -208,12 +208,12 @@ def load_tasks_from_db(self, child_id: int) -> List[Task]:
 
 def init_achievements(self, db_conn):
         """Инициализация системы достижений"""
-        from app.data.database import get_connection
+        from data.database import get_connection
         self.achievement_system = AchievementSystem(get_connection())
     
 def complete_task(self, task_id: int, child_id: int, photo_url: str = None) -> Dict:
     """Расширенная версия с проверкой достижений"""
-    from app.data.database import TaskRepository, ChildRepository
+    from data.database import TaskRepository, ChildRepository
     
     # Получаем баллы за задание
     points = TaskRepository.complete_task(task_id, photo_url)
@@ -240,7 +240,7 @@ def complete_task(self, task_id: int, child_id: int, photo_url: str = None) -> D
 
 def _collect_stats(self, child_id: int) -> Dict:
     """Собрать статистику ребёнка для проверки достижений"""
-    from app.data.database import get_connection
+    from data.database import get_connection
     
     conn = get_connection()
     cursor = conn.cursor()

@@ -19,6 +19,12 @@ from datetime import datetime, timedelta
 # Инициализация базы данных при первом запуске
 from data.database import init_database, ChildRepository, TaskRepository, get_connection
 import traceback
+# Вместо:
+# st.session_state.parent_mode = ParentMode(get_connection())
+
+# Теперь:
+from data.database import get_db_path
+st.session_state.parent_mode = ParentMode(get_db_path())
 
 # Отладка: считаем количество rerun
 if 'rerun_count' not in st.session_state:
@@ -96,8 +102,8 @@ if 'engine' not in st.session_state:
         })
 
 if 'parent_mode' not in st.session_state:
-    from data.database import get_connection
-    st.session_state.parent_mode = ParentMode(get_connection())
+    from data.database import get_db_path
+    st.session_state.parent_mode = ParentMode(get_db_path())
     st.session_state.parent_authenticated = False
     st.session_state.show_parent_login = False
 

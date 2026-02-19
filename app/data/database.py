@@ -17,6 +17,10 @@ def get_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
+def get_db_path():
+    """Вернуть путь к файлу БД"""
+    return str(DB_PATH)
+
 def init_database():
     """Создать таблицы, если их нет (безопасная версия)"""
     global _INITIALIZED

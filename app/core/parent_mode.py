@@ -106,7 +106,7 @@ def render_parent_login():
             pin = st.text_input("PIN-код", type="password", max_chars=4)
             col1, col2, col3 = st.columns(3)
             with col2:
-                submitted = st.form_submit_button("🔐 Войти", use_container_width=True)
+                submitted = st.form_submit_button("🔐 Войти")
             
             if submitted:
                 if st.session_state.parent_mode.check_pin(pin):

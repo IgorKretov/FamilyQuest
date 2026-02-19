@@ -6,8 +6,10 @@ import json
 from datetime import datetime
 from pathlib import Path
 from typing import List, Optional, Dict, Any
+import streamlit as st
 
 DB_PATH = Path(__file__).parent.parent.parent / "familyquest.db"
+_INITIALIZED = False  # Флаг для отслеживания инициализации
 
 def get_connection():
     """Получить соединение с БД"""
@@ -16,100 +18,114 @@ def get_connection():
     return conn
 
 def init_database():
-    """Создать таблицы, если их нет"""
-    conn = get_connection()
-    cursor = conn.cursor()
+    """Создать таблицы, если их нет (безопасная версия)"""
+    global _INITIALIZED
     
-    # Таблица детей
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS children (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            age INTEGER NOT NULL,
-            avatar TEXT,
-            interests TEXT,
-            points INTEGER DEFAULT 0,
-            level INTEGER DEFAULT 1,
-            streak_days INTEGER DEFAULT 0,
-            last_active TEXT,
-            created_at TEXT DEFAULT CURRENT_TIMESTAMP
-        )
-    ''')
+    # Если уже инициализировали в этой сессии — пропускаем
+    if _INITIALIZED:
+        return
     
-    # Таблица заданий
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS tasks (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            title TEXT NOT NULL,
-            description TEXT,
-            category TEXT,
-            points INTEGER,
-            difficulty TEXT,
-            emoji TEXT,
-            photo_required INTEGER DEFAULT 0,
-            child_id INTEGER,
-            due_date TEXT,
-            completed INTEGER DEFAULT 0,
-            completed_at TEXT,
-            photo_url TEXT,
-            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (child_id) REFERENCES children (id)
-        )
-    ''')
-    
-    # Таблица истории наград
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS rewards_history (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            child_id INTEGER,
-            reward_name TEXT,
-            points_spent INTEGER,
-            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (child_id) REFERENCES children (id)
-        )
-    ''')
-
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS achievements (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            child_id INTEGER,
-            achievement_id TEXT,
-            unlocked_at TEXT DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (child_id) REFERENCES children (id)
-        )
-    ''')
-    
-    #таблица с описанием достижений
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS achievements_def (
-            id TEXT PRIMARY KEY,
-            name TEXT NOT NULL,
-            description TEXT,
-            emoji TEXT,
-            condition_type TEXT,  -- tasks_completed, streak_days, points_total
-            condition_value INTEGER,
-            reward_points INTEGER
-        )
-    ''')
-
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS app_settings (
-            key TEXT PRIMARY KEY,
-            value TEXT,
-            updated_at TEXT DEFAULT CURRENT_TIMESTAMP
-        )
-    ''')
-
-    # Добавляем PIN-код по умолчанию (если нет)
-    cursor.execute('''
-        INSERT OR IGNORE INTO app_settings (key, value)
-        VALUES ('parent_pin', '1234')
-    ''')
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
         
-    conn.commit()
-    conn.close()
-    
-    print(f"✅ База данных инициализирована: {DB_PATH}")
+        # Таблица детей
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS children (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                age INTEGER NOT NULL,
+                avatar TEXT,
+                interests TEXT,
+                points INTEGER DEFAULT 0,
+                level INTEGER DEFAULT 1,
+                streak_days INTEGER DEFAULT 0,
+                last_active TEXT,
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        
+        # Таблица заданий
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS tasks (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                title TEXT NOT NULL,
+                description TEXT,
+                category TEXT,
+                points INTEGER,
+                difficulty TEXT,
+                emoji TEXT,
+                photo_required INTEGER DEFAULT 0,
+                child_id INTEGER,
+                due_date TEXT,
+                completed INTEGER DEFAULT 0,
+                completed_at TEXT,
+                photo_url TEXT,
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (child_id) REFERENCES children (id)
+            )
+        ''')
+        
+        # Таблица истории наград
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS rewards_history (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                child_id INTEGER,
+                reward_name TEXT,
+                points_spent INTEGER,
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (child_id) REFERENCES children (id)
+            )
+        ''')
+        
+        # Таблица достижений
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS achievements (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                child_id INTEGER,
+                achievement_id TEXT,
+                unlocked_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (child_id) REFERENCES children (id)
+            )
+        ''')
+        
+        # Таблица определений достижений
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS achievements_def (
+                id TEXT PRIMARY KEY,
+                name TEXT NOT NULL,
+                description TEXT,
+                emoji TEXT,
+                condition_type TEXT,
+                condition_value INTEGER,
+                reward_points INTEGER
+            )
+        ''')
+        
+        # Таблица настроек
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS app_settings (
+                key TEXT PRIMARY KEY,
+                value TEXT,
+                updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        
+        # Добавляем PIN по умолчанию, если нет
+        cursor.execute('''
+            INSERT OR IGNORE INTO app_settings (key, value)
+            VALUES ('parent_pin', '1234')
+        ''')
+        
+        conn.commit()
+        conn.close()
+        
+        _INITIALIZED = True
+        print(f"✅ База данных инициализирована: {DB_PATH}")
+        
+    except Exception as e:
+        print(f"❌ Ошибка инициализации БД: {e}")
+        _INITIALIZED = False
 
 class ChildRepository:
     """Работа с детьми в БД"""

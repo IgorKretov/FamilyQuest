@@ -105,31 +105,31 @@ class GameEngine:
         return tasks[:count]
 
     def load_children_from_db(self):
-    """Загрузить всех детей из БД"""
-    from app.data.database import ChildRepository
-    
-    children_data = ChildRepository.get_all()
-    self.children = {}
-    for child_data in children_data:
-        # Преобразуем interests из JSON обратно в список
-        if child_data['interests']:
-            child_data['interests'] = json.loads(child_data['interests'])
-        else:
-            child_data['interests'] = []
+        """Загрузить всех детей из БД"""
+        from app.data.database import ChildRepository
         
-        # Создаём объект Child
-        child = Child(
-            id=child_data['id'],
-            name=child_data['name'],
-            age=child_data['age'],
-            avatar=child_data['avatar'],
-            interests=child_data['interests'],
-            points=child_data['points'],
-            level=child_data['level'],
-            streak_days=child_data['streak_days'],
-            last_active=datetime.fromisoformat(child_data['last_active']).date()
-        )
-        self.children[child.id] = child
+        children_data = ChildRepository.get_all()
+        self.children = {}
+        for child_data in children_data:
+            # Преобразуем interests из JSON обратно в список
+            if child_data['interests']:
+                child_data['interests'] = json.loads(child_data['interests'])
+            else:
+                child_data['interests'] = []
+            
+            # Создаём объект Child
+            child = Child(
+                id=child_data['id'],
+                name=child_data['name'],
+                age=child_data['age'],
+                avatar=child_data['avatar'],
+                interests=child_data['interests'],
+                points=child_data['points'],
+                level=child_data['level'],
+                streak_days=child_data['streak_days'],
+                last_active=datetime.fromisoformat(child_data['last_active']).date()
+            )
+            self.children[child.id] = child
 
 def add_child_to_db(self, name: str, age: int, interests: List[str]) -> Child:
     """Добавить ребёнка в БД и в память"""

@@ -46,7 +46,7 @@ def render_sidebar(engine, child_id):
             if st.button("🚪 Выйти"):
                 st.session_state.parent_authenticated = False
                 st.session_state.show_parent_login = False
-                st.experimental_rerun()
+                # st.experimental_rerun() # Не вызываем rerun() - Streamlid сам перезагрузится при изменении состояни
 
 
 def render_child_selector(engine):

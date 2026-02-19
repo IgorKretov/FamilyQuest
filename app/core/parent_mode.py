@@ -3,16 +3,24 @@
 """
 import streamlit as st
 from datetime import datetime, timedelta
+import sqlite3
 import hashlib
 
 class ParentMode:
-    def __init__(self, db_conn):
-        self.conn = db_conn
+    def __init__(self, db_path):
+        """Инициализация с путём к БД вместо соединения"""
+        self.db_path = db_path
         self._init_settings()
+    
+    def _get_connection(self):
+        """Создать новое соединение с БД для текущего потока"""
+        conn = sqlite3.connect(self.db_path)
+        return conn
     
     def _init_settings(self):
         """Инициализация настроек"""
-        cursor = self.conn.cursor()
+        conn = self._get_connection()
+        cursor = conn.cursor()
         
         # Создаём таблицу если нет
         cursor.execute('''
@@ -29,13 +37,16 @@ class ParentMode:
             VALUES ('parent_pin', '1234')
         ''')
         
-        self.conn.commit()
+        conn.commit()
+        conn.close()
     
     def check_pin(self, pin: str) -> bool:
         """Проверка PIN-кода"""
-        cursor = self.conn.cursor()
+        conn = self._get_connection()
+        cursor = conn.cursor()
         cursor.execute('SELECT value FROM app_settings WHERE key = ?', ('parent_pin',))
         result = cursor.fetchone()
+        conn.close()
         return result and result[0] == pin
     
     def set_pin(self, new_pin: str) -> bool:
@@ -43,29 +54,36 @@ class ParentMode:
         if len(new_pin) != 4 or not new_pin.isdigit():
             return False
         
-        cursor = self.conn.cursor()
+        conn = self._get_connection()
+        cursor = conn.cursor()
         cursor.execute('''
             UPDATE app_settings 
             SET value = ?, updated_at = CURRENT_TIMESTAMP
             WHERE key = ?
         ''', (new_pin, 'parent_pin'))
-        self.conn.commit()
+        conn.commit()
+        conn.close()
         return True
     
     def get_settings(self) -> dict:
         """Получить все настройки"""
-        cursor = self.conn.cursor()
+        conn = self._get_connection()
+        cursor = conn.cursor()
         cursor.execute('SELECT key, value FROM app_settings')
-        return {row[0]: row[1] for row in cursor.fetchall()}
+        result = {row[0]: row[1] for row in cursor.fetchall()}
+        conn.close()
+        return result
     
     def update_setting(self, key: str, value: str):
         """Обновить настройку"""
-        cursor = self.conn.cursor()
+        conn = self._get_connection()
+        cursor = conn.cursor()
         cursor.execute('''
             INSERT OR REPLACE INTO app_settings (key, value, updated_at)
             VALUES (?, ?, CURRENT_TIMESTAMP)
         ''', (key, value))
-        self.conn.commit()
+        conn.commit()
+        conn.close()
 
 def render_parent_login():
     """Рендеринг экрана входа для родителей"""
@@ -88,7 +106,7 @@ def render_parent_login():
             pin = st.text_input("PIN-код", type="password", max_chars=4)
             col1, col2, col3 = st.columns(3)
             with col2:
-                submitted = st.form_submit_button("🔐 Войти")
+                submitted = st.form_submit_button("🔐 Войти", use_container_width=True)
             
             if submitted:
                 if st.session_state.parent_mode.check_pin(pin):
@@ -113,6 +131,7 @@ def render_parent_panel(engine, parent_mode):
         <h2>⚙️ Панель управления</h2>
     </div>
     """, unsafe_allow_html=True)
+    
     tab1, tab2, tab3, tab4 = st.tabs(["👥 Дети", "🔐 Настройки", "📊 Статистика", "📤 Экспорт"])
     
     with tab1:
@@ -130,7 +149,7 @@ def render_parent_panel(engine, parent_mode):
                 with col2:
                     st.metric("Дней подряд", child.streak_days)
                     st.metric("Заданий выполнено", 
-                             len([t for t in engine.tasks if t.child_id == child.id and t.completed]))
+                             len([t for t in engine.tasks if hasattr(t, 'child_id') and t.child_id == child.id and t.completed]))
                 
                 if st.button(f"🔄 Сбросить прогресс {child.name}", key=f"reset_{child.id}"):
                     if st.session_state.get(f"confirm_reset_{child.id}", False):
@@ -186,7 +205,7 @@ def render_parent_panel(engine, parent_mode):
         st.info("📊 Скоро здесь появится график активности")
         
         # Общая статистика
-        total_tasks = sum(1 for t in engine.tasks if t.completed)
+        total_tasks = sum(1 for t in engine.tasks if hasattr(t, 'completed') and t.completed)
         total_points = sum(c.points for c in engine.children.values())
         
         col1, col2, col3 = st.columns(3)

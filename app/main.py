@@ -17,7 +17,12 @@ from core.parent_mode import ParentMode, render_parent_login, render_parent_pane
 from datetime import datetime, timedelta
 
 # Инициализация базы данных при первом запуске
-from data.database import init_database, ChildRepository, TaskRepository
+from data.database import init_database, ChildRepository, TaskRepository, get_connection
+
+# Инициализация БД (только один раз)
+if 'db_initialized' not in st.session_state:
+    init_database()
+    st.session_state.db_initialized = True
 
 # Создаём таблицы, если их нет
 init_database()

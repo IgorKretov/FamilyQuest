@@ -4,3 +4,4 @@ plotly==5.17.0
 sqlalchemy==2.0.23
 python-dotenv==1.0.0
 pillow==10.0.1
+gigachat==0.1.21

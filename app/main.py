@@ -12,9 +12,11 @@ from ui.tabs.family import render_family
 from ui.components import render_sidebar, load_css, render_add_child_form
 from ui.tabs.create_task import render_create_task, render_task_library
 from ui.tabs.achievements import render_achievements
+from ui.tabs.ai_tasks import render_ai_tasks
 from ui.effects import add_custom_css, play_success_effect, play_achievement_effect
 from core.parent_mode import ParentMode, render_parent_login, render_parent_panel
 from datetime import datetime, timedelta
+
 
 # Инициализация базы данных при первом запуске
 from data.database import init_database, ChildRepository, TaskRepository, get_connection
@@ -138,18 +140,22 @@ st.title("🎮 FamilyQuest - Семейные приключения")
 # Боковая панель с информацией о ребёнке
 render_sidebar(st.session_state.engine, st.session_state.current_child)
 
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+# Создаём 7 вкладок
+tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
     "📋 Задания",
     "✨ Создать",
-    "🏆 Достижения",  # Новая вкладка
+    "🤖 ИИ-задания",
+    "🏆 Достижения",
     "🎁 Награды",
     "👤 Профиль",
     "👨‍👩‍👧 Семья"
 ])
 
+# Вкладка 1: Задания
 with tab1:
     render_daily_tasks(st.session_state.engine, st.session_state.current_child)
 
+# Вкладка 2: Создание заданий
 with tab2:
     # Две подвкладки: создание и библиотека
     subtab1, subtab2 = st.tabs(["✏️ Своё задание", "📚 Готовые шаблоны"])
@@ -158,13 +164,24 @@ with tab2:
     with subtab2:
         render_task_library(st.session_state.engine, st.session_state.current_child)
 
+# Вкладка 3: ИИ-задания
 with tab3:
+    render_ai_tasks(st.session_state.engine, st.session_state.current_child)
+
+# Вкладка 4: Достижения
+with tab4:
     render_achievements(st.session_state.engine, st.session_state.current_child)
 
-with tab4:
+# Вкладка 5: Награды
+with tab5:
+    render_rewards(st.session_state.engine, st.session_state.current_child)  # <-- исправлено
+
+# Вкладка 6: Профиль
+with tab6:
     render_profile(st.session_state.engine, st.session_state.current_child)
 
-with tab5:
+# Вкладка 7: Семья
+with tab7:
     render_family(st.session_state.engine, st.session_state.current_child)
 
 # Footer

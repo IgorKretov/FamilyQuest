@@ -8,14 +8,27 @@ from typing import List, Dict, Optional
 from datetime import datetime
 from gigachat import GigaChat
 from gigachat.models import Chat, Messages, MessagesRole
+from dotenv import load_dotenv
 
 class AITaskGenerator:
     """Генератор заданий на базе GigaChat"""
     
     def __init__(self):
         # Загружаем credentials из переменных окружения или st.secrets
-        self.credentials = os.getenv("GIGACHAT_CREDENTIALS") or st.secrets.get("GIGACHAT_CREDENTIALS")
+        load_dotenv()
+        self.credentials = (
+            os.getenv("GIGACHAT_CREDENTIALS") or  # Из .env
+            st.secrets.get("GIGACHAT_CREDENTIALS")  # Из Streamlit secrets
+        )
         
+        if not self.credentials:
+            st.error("""
+            ❌ Не найден ключ GigaChat!
+            
+            Локально: создай файл .env с GIGACHAT_CREDENTIALS=твой_ключ
+            На Streamlit Cloud: добавь секрет в настройках
+            """)
+            return
         # Параметры подключения к GigaChat [citation:1]
         self.client = GigaChat(
             credentials=self.credentials,

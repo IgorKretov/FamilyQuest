@@ -73,7 +73,7 @@ def render_single_task(generator, child, engine):
             }.get(x, x)
         )
     
-    if st.button("✨ Сгенерировать задание", use_container_width=True):
+    if st.button("✨ Сгенерировать задание"):
         with st.spinner("ИИ придумывает задание... 🤖"):
             task = generator.generate_task(
                 child_name=child.name,
@@ -120,7 +120,7 @@ def render_single_task(generator, child, engine):
             
             col1, col2 = st.columns(2)
             with col1:
-                if st.button("✅ Добавить в задания", use_container_width=True):
+                if st.button("✅ Добавить в задания"):
                     # Сохраняем задание в БД
                     task_data = {
                         "title": task['title'],
@@ -140,7 +140,7 @@ def render_single_task(generator, child, engine):
                     st.experimental_rerun()
             
             with col2:
-                if st.button("🔄 Ещё задание", use_container_width=True):
+                if st.button("🔄 Ещё задание"):
                     st.session_state.show_ai_task = False
                     st.experimental_rerun()
 
@@ -151,7 +151,7 @@ def render_daily_quest(generator, child, engine):
     
     count = st.slider("Сколько заданий?", min_value=2, max_value=5, value=3)
     
-    if st.button("🚀 Создать квест", use_container_width=True):
+    if st.button("🚀 Создать квест"):
         with st.spinner("ИИ придумывает задания... 🤖"):
             tasks = generator.generate_daily_quest(
                 child_name=child.name,
@@ -200,7 +200,7 @@ def render_daily_quest(generator, child, engine):
                     engine.save_task_to_db(task_data)
                     st.success(f"✅ Задание '{task['title']}' добавлено!")
         
-        if st.button("🔄 Новый квест", use_container_width=True):
+        if st.button("🔄 Новый квест"):
             st.session_state.show_quest = False
             st.experimental_rerun()
 
@@ -209,7 +209,7 @@ def render_story_task(generator, child, engine):
     st.markdown("### 📖 Задание-приключение")
     st.markdown("Представь, что ты герой сказки или космический путешественник!")
     
-    if st.button("✨ Придумать историю", use_container_width=True):
+    if st.button("✨ Придумать историю"):
         with st.spinner("ИИ сочиняет историю... 📚"):
             task = generator.generate_story_task(
                 child_name=child.name,
@@ -246,7 +246,7 @@ def render_story_task(generator, child, engine):
             
             col1, col2 = st.columns(2)
             with col1:
-                if st.button("✅ Принять миссию", use_container_width=True):
+                if st.button("✅ Принять миссию"):
                     task_data = {
                         "title": task['title'],
                         "description": f"{task['story']} {task['mission']}",
@@ -265,6 +265,6 @@ def render_story_task(generator, child, engine):
                     st.experimental_rerun()
             
             with col2:
-                if st.button("🔄 Другая история", use_container_width=True):
+                if st.button("🔄 Другая история"):
                     st.session_state.show_story = False
                     st.experiment_rerun()

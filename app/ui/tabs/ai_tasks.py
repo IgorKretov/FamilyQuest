@@ -3,8 +3,8 @@
 """
 import streamlit as st
 import json
-from app.core.ai_generator import AITaskGenerator
-from app.ui.effects import play_success_effect
+from core.ai_generator import AITaskGenerator
+from ui.effects import play_success_effect
 
 def render_ai_tasks(engine, child_id):
     st.subheader("🤖 Умные задания от ИИ")
@@ -35,7 +35,7 @@ def render_ai_tasks(engine, child_id):
         render_daily_quest(generator, child, engine)
     
     with tab3:
- render_story_task(generator, child, engine)
+        render_story_task(generator, child, engine)
 
 def render_single_task(generator, child, engine):
     """Генерация одного задания"""
@@ -137,12 +137,12 @@ def render_single_task(generator, child, engine):
                     play_success_effect()
                     st.success("✅ Задание добавлено!")
                     st.session_state.show_ai_task = False
-                    st.rerun()
+                    st.experimental_rerun()
             
             with col2:
                 if st.button("🔄 Ещё задание", use_container_width=True):
                     st.session_state.show_ai_task = False
-                    st.rerun()
+                    st.experimental_rerun()
 
 def render_daily_quest(generator, child, engine):
     """Генерация квеста на день [citation:3]"""
@@ -202,7 +202,7 @@ def render_daily_quest(generator, child, engine):
         
         if st.button("🔄 Новый квест", use_container_width=True):
             st.session_state.show_quest = False
-            st.rerun()
+            st.experimental_rerun()
 
 def render_story_task(generator, child, engine):
     """Генерация задания в формате истории [citation:8]"""
@@ -262,7 +262,7 @@ def render_story_task(generator, child, engine):
                     play_success_effect()
                     st.success("✅ Миссия принята! Удачи, герой!")
                     st.session_state.show_story = False
-                    st.rerun()
+                    st.experimental_rerun()
             
             with col2:
                 if st.button("🔄 Другая история", use_container_width=True):

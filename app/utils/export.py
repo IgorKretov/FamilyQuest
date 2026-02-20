@@ -169,7 +169,7 @@ def render_export_section(exporter):
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        if st.button("📥 Экспорт детей (CSV)", use_container_width=True):
+        if st.button("📥 Экспорт детей (CSV)"):
             csv_data = exporter.export_children_csv()
             st.download_button(
                 label="💾 Скачать children.csv",
@@ -179,7 +179,7 @@ def render_export_section(exporter):
             )
     
     with col2:
-        if st.button("📥 Экспорт заданий (CSV)", use_container_width=True):
+        if st.button("📥 Экспорт заданий (CSV)"):
             csv_data = exporter.export_tasks_csv()
             st.download_button(
                 label="💾 Скачать tasks.csv",
@@ -189,7 +189,7 @@ def render_export_section(exporter):
             )
     
     with col3:
-        if st.button("📥 Экспорт достижений (CSV)", use_container_width=True):
+        if st.button("📥 Экспорт достижений (CSV)"):
             csv_data = exporter.export_achievements_csv()
             st.download_button(
                 label="💾 Скачать achievements.csv",
@@ -207,7 +207,7 @@ def render_export_section(exporter):
         df = exporter.generate_report(days=days)
         
         if not df.empty:
-            st.dataframe(df, use_container_width=True)
+            st.dataframe(df)
             
             # Простая статистика
             total_tasks = df['Заданий'].sum()

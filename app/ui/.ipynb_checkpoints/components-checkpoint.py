@@ -41,6 +41,10 @@ def render_sidebar(engine, child_id):
         
         # Селектор детей
         render_child_selector(engine)
+        # Кнопка создания нового ребёнка
+        if st.button("👶 Создать нового героя", use_container_width=True):
+            st.session_state.show_registration = True
+            st.rerun()
         
         st.markdown("---")
         st.caption(f"🎯 Интересы: {', '.join(child.interests)}")

@@ -21,10 +21,11 @@ def render_sidebar(engine, child_id):
     """Отображение боковой панели с информацией о ребёнке"""
     child = engine.children.get(child_id)
     if not child:
+        st.sidebar.warning("Профиль не найден")
         return
     
     with st.sidebar:
-        st.image(f"https://api.dicebear.com/7.x/adventurer/svg?seed={child.name}", width=100)
+        st.image(child.avatar if hasattr(child, 'avatar') else f"https://api.dicebear.com/7.x/adventurer/svg?seed={child.name}", width=100)
         st.markdown(f"### {child.name}")
         
         # Прогресс-бар уровня
@@ -39,28 +40,9 @@ def render_sidebar(engine, child_id):
         with col2:
             st.metric("🔥 Дней", child.streak_days)
         
-        # Селектор детей
-        render_child_selector(engine)
-        
         st.markdown("---")
-        st.caption(f"🎯 Интересы: {', '.join(child.interests)}")
-        
-        st.markdown("---")
-        
-        # Кнопка родительского режима
-        if not st.session_state.get('parent_authenticated', False):
-            if st.button("👨‍👩‍👧 Родителям", key="parent_login_btn"):
-                st.session_state.show_parent_login = True
-                safe_rerun()
-        else:
-            # Показываем, что родительский режим активен
-            st.success("👑 Режим родителя")
-            if st.button("🚪 Выйти", key="parent_logout_btn"):
-                st.session_state.parent_authenticated = False
-                st.session_state.show_parent_login = False
-                # Не вызываем rerun - Streamlit сам обновится при изменении состояния
-                # но safe_rerun() можно оставить для немедленного обновления
-                safe_rerun()
+        if child.interests:
+            st.caption(f"🎯 Интересы: {', '.join(child.interests)}")
 
 def render_child_selector(engine):
     """Компонент для выбора и добавления детей"""

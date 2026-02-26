@@ -13,13 +13,14 @@ class Child:
     name: str
     age: int
     avatar: str
-    interests: str  # храним как JSON строку
+    interests: str
     points: int
     level: int
     streak_days: int
-    last_active: str  # ISO формат даты
+    last_active: str
     created_at: str
-
+    parent_id: Optional[int] = None  # <-- ДОБАВЛЯЕМ
+    
     @classmethod
     def from_dict(cls, data):
         return cls(
@@ -32,7 +33,8 @@ class Child:
             level=data['level'],
             streak_days=data['streak_days'],
             last_active=data['last_active'],
-            created_at=data['created_at']
+            created_at=data['created_at'],
+            parent_id=data.get('parent_id')  # <-- ДОБАВЛЯЕМ
         )
     
     def to_dict(self):
@@ -46,7 +48,8 @@ class Child:
             'level': self.level,
             'streak_days': self.streak_days,
             'last_active': self.last_active,
-            'created_at': self.created_at
+            'created_at': self.created_at,
+            'parent_id': self.parent_id  # <-- ДОБАВЛЯЕМ
         }
 
 @dataclass
